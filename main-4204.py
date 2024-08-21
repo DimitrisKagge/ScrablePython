@@ -28,6 +28,15 @@ def guidelines():
 
 if __name__ == "__main__":
     game = classes.Game("Human", "Computer", algorithm='SMART')
-    game.setup()
-    game.run()
-    game.end()
+
+    while True:
+        game.setup()
+        game.run()
+        game.end()
+
+        play_again = input("Do you want to play again? (y/n): ").strip().lower()
+        if play_again != 'y':
+            print("Thanks for playing!")
+            break
+        else:
+            game.reset()

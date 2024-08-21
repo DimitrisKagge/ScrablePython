@@ -1,5 +1,7 @@
 import random
 import itertools
+from collections import Counter
+
 
 class SakClass:
     def __init__(self):
@@ -31,58 +33,85 @@ class SakClass:
         self.sak.extend(letters)
         random.shuffle(self.sak)
 
+
 class Player:
     def __init__(self, name):
         self.name = name
         self.letters = []
+        self.score = 0
 
     def __repr__(self):
-        return f"Player({self.name}, Letters: {self.letters})"
+        return f"Player({self.name}, Letters: {self.letters}, Score: {self.score})"
+
+    def add_letters(self, new_letters):
+        self.letters.extend(new_letters)
+
+    def remove_used_letters(self, word):
+        word_counter = Counter(word)
+        letters_counter = Counter(self.letters)
+
+        for letter in word_counter:
+            letters_counter[letter] -= word_counter[letter]
+
+        self.letters = list(letters_counter.elements())
+
+    def can_form_word(self, word):
+        word_counter = Counter(word)
+        letters_counter = Counter(self.letters)
+        return all(letters_counter[letter] >= word_counter[letter] for letter in word_counter)
+
 
 class Human(Player):
     def __init__(self, name):
         super().__init__(name)
 
     def play(self):
-        word = input(f"{self.name}, enter your word: ")
-        return word
+        while True:
+            print(f"Your available letters: {self.letters}")
+            word = input(
+                f"{self.name}, enter your word (or 'change' to replace letters, 'q' to quit): ").strip().upper()
+            if word == 'CHANGE':
+                return word
+            elif word == 'Q':
+                return word
+            elif self.can_form_word(word):
+                return word
+            else:
+                print("Invalid word! You don't have the necessary letters.")
+
 
 class Computer(Player):
     def __init__(self, name, algorithm='MIN'):
         super().__init__(name)
         self.algorithm = algorithm
 
-    def play(self, valid_words):
+    def play(self, valid_words, letter_points):
+        possible_words = []
+        for i in range(2, 8):
+            for perm in itertools.permutations(self.letters, i):
+                word = ''.join(perm)
+                if word in valid_words and self.can_form_word(word):
+                    possible_words.append(word)
+
         if self.algorithm == 'MIN':
-            for i in range(2, 8):
-                for perm in itertools.permutations(self.letters, i):
-                    word = ''.join(perm)
-                    if word in valid_words:
-                        return word
+            return min(possible_words, key=len, default=None)
         elif self.algorithm == 'MAX':
-            for i in range(7, 1, -1):
-                for perm in itertools.permutations(self.letters, i):
-                    word = ''.join(perm)
-                    if word in valid_words:
-                        return word
+            return max(possible_words, key=len, default=None)
         elif self.algorithm == 'SMART':
-            best_word = ''
-            max_points = 0
-            for i in range(2, 8):
-                for perm in itertools.permutations(self.letters, i):
-                    word = ''.join(perm)
-                    if word in valid_words:
-                        points = sum([self.letter_points[letter] for letter in word])
-                        if points > max_points:
-                            max_points = points
-                            best_word = word
-            return best_word
+            return max(possible_words, key=lambda w: sum([letter_points[l] for l in w]), default=None)
+
 
 class Game:
     def __init__(self, human_name, computer_name, algorithm='MIN'):
+        self.human_name = human_name
+        self.computer_name = computer_name
+        self.algorithm = algorithm
+        self.reset()
+
+    def reset(self):
         self.sak = SakClass()
-        self.human = Human(human_name)
-        self.computer = Computer(computer_name, algorithm)
+        self.human = Human(self.human_name)
+        self.computer = Computer(self.computer_name, self.algorithm)
         self.valid_words = self.load_words()
 
     def load_words(self):
@@ -91,36 +120,53 @@ class Game:
         return set(words)
 
     def setup(self):
-        self.human.letters = self.sak.getletters(7)
-        self.computer.letters = self.sak.getletters(7)
+        self.human.add_letters(self.sak.getletters(7))
+        self.computer.add_letters(self.sak.getletters(7))
         print(f"{self.human.name}'s letters: {self.human.letters}")
         print(f"{self.computer.name} is ready.")
 
     def run(self):
         while True:
             human_word = self.human.play()
-            if human_word == 'q':
+            if human_word == 'Q':
                 print("Game over!")
                 break
-            elif human_word == 'p':
-                self.sak.putbackletters(self.human.letters)
-                self.human.letters = self.sak.getletters(7)
+            elif human_word == 'CHANGE':
+                self.change_letters(self.human)
                 continue
             elif human_word in self.valid_words:
-                print(f"Valid word! You scored: {self.score_word(human_word)} points.")
-                self.human.letters = self.sak.getletters(7)
+                points = self.score_word(human_word)
+                print(f"Valid word! You scored: {points} points.")
+                self.human.score += points
+                self.human.remove_used_letters(human_word)
+                self.human.add_letters(self.sak.getletters(7 - len(self.human.letters)))
             else:
                 print("Invalid word!")
 
-            computer_word = self.computer.play(self.valid_words)
+            computer_word = self.computer.play(self.valid_words, self.sak.letter_points)
             if computer_word:
+                points = self.score_word(computer_word)
                 print(f"{self.computer.name} played: {computer_word}")
-                print(f"{self.computer.name} scored: {self.score_word(computer_word)} points.")
-                self.computer.letters = self.sak.getletters(7)
+                print(f"{self.computer.name} scored: {points} points.")
+                self.computer.score += points
+                self.computer.remove_used_letters(computer_word)
+                self.computer.add_letters(self.sak.getletters(7 - len(self.computer.letters)))
+
+    def change_letters(self, player):
+        self.sak.putbackletters(player.letters)
+        player.letters = self.sak.getletters(7)
+        print(f"{player.name} changed their letters. New letters: {player.letters}")
 
     def score_word(self, word):
         return sum([self.sak.letter_points[letter] for letter in word])
 
     def end(self):
         print("Final score:")
-
+        print(f"{self.human.name}: {self.human.score} points")
+        print(f"{self.computer.name}: {self.computer.score} points")
+        if self.human.score > self.computer.score:
+            print(f"{self.human.name} wins!")
+        elif self.human.score < self.computer.score:
+            print(f"{self.computer.name} wins!")
+        else:
+            print("It's a tie!")
