@@ -1,42 +1,66 @@
 import classes
+import json
+import os
 
+def display_menu():
+    print("******************************************")
+    print("** Welcome to the Scrabble Game! **")
+    print("******************************************")
+    print("1. Start a new game")
+    print("2. View previous game records")
+    print("3. Exit")
+    print("******************************************")
+    choice = input("Enter your choice (1/2/3): ").strip()
+    print("******************************************")
+    return choice
 
-def guidelines():
-    """
-    This game is a simplified version of Scrabble in Greek.
+def choose_algorithm():
+    print("******************************************")
+    print("Choose the algorithm for the computer player:")
+    print("1. MIN - The computer finds the smallest valid word.")
+    print("2. MAX - The computer finds the largest valid word.")
+    print("3. SMART - The computer finds the highest scoring word.")
+    print("******************************************")
+    choice = input("Enter your choice (1/2/3): ").strip()
+    print("******************************************")
+    if choice == '1':
+        return 'MIN'
+    elif choice == '2':
+        return 'MAX'
+    elif choice == '3':
+        return 'SMART'
+    else:
+        print("Invalid choice, defaulting to SMART.")
+        print("******************************************")
+        return 'SMART'
 
-    Classes Implemented:
-    - SakClass: Manages the letters bag.
-    - Player: Base class for all players.
-    - Human: Inherits from Player, manages human player behavior.
-    - Computer: Inherits from Player, manages computer player behavior.
-    - Game: Manages the overall game flow.
-
-    Inheritance:
-    - Human and Computer inherit from Player.
-
-    Algorithms for Computer:
-    - MIN: Finds the smallest valid word.
-    - MAX: Finds the largest valid word.
-    - SMART: Finds the highest scoring word.
-
-    Data Structure for Words:
-    - Words are stored in a set for quick lookup.
-    """
-    pass
-
+def view_game_records():
+    print("******************************************")
+    if os.path.exists('game_data.json'):
+        with open('game_data.json', 'r', encoding='utf-8') as f:
+            game_data = json.load(f)
+            print("Previous game records:")
+            for i, record in enumerate(game_data, start=1):
+                print(f"Game {i}: Human Score: {record['human_score']}, Computer Score: {record['computer_score']}, Moves: {record['moves']}, Algorithm: {record['algorithm']}")
+    else:
+        print("No game records found.")
+    print("******************************************")
 
 if __name__ == "__main__":
-    game = classes.Game("Human", "Computer", algorithm='SMART')
-
     while True:
-        game.setup()
-        game.run()
-        game.end()
-
-        play_again = input("Do you want to play again? (y/n): ").strip().lower()
-        if play_again != 'y':
-            print("Thanks for playing!")
+        choice = display_menu()
+        if choice == '1':
+            algorithm = choose_algorithm()
+            game = classes.Game("Human", "Computer", algorithm=algorithm)
+            game.setup()
+            game.run()
+            game.end()
+        elif choice == '2':
+            view_game_records()
+        elif choice == '3':
+            print("Exiting the game. Goodbye!")
+            print("******************************************")
             break
         else:
-            game.reset()
+            print("Invalid choice, please try again.")
+            print("******************************************")
