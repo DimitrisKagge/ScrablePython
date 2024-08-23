@@ -12,10 +12,10 @@ class SakClass:
             'Ι': 8, 'Κ': 4, 'Λ': 3, 'Μ': 3, 'Ν': 6, 'Ξ': 1, 'Ο': 9, 'Π': 4,
             'Ρ': 5, 'Σ': 7, 'Τ': 8, 'Υ': 4, 'Φ': 1, 'Χ': 1, 'Ψ': 1, 'Ω': 3
         }
-        self.letter_points = {  # Προσθήκη της ιδιότητας letter_points
+        self.letter_points = {
             'Α': 1, 'Β': 8, 'Γ': 4, 'Δ': 4, 'Ε': 1, 'Ζ': 10, 'Η': 1, 'Θ': 10,
-            'Ι': 1, 'Κ': 2, 'Λ': 3, 'Μ': 2, 'Ν': 1, 'Ξ': 10, 'Ο': 1, 'Π': 2,
-            'Ρ': 2, 'Σ': 1, 'Τ': 1, 'Υ': 2, 'Φ': 8, 'Χ': 10, 'Ψ': 10, 'Ω': 3
+            'Ι': 1, 'Κ': 2, 'Λ': 3, 'Μ': 3, 'Ν': 1, 'Ξ': 10, 'Ο': 1, 'Π': 2,
+            'Ρ': 2, 'Σ': 1, 'Τ': 1, 'Υ': 2, 'Φ': 8, 'Χ': 8, 'Ψ': 10, 'Ω': 3
         }
         self.sak = self.randomize_sak()
 
@@ -37,7 +37,6 @@ class SakClass:
 
     def remaining_letters(self):
         return len(self.sak)
-
 
 
 class Player:
@@ -171,12 +170,12 @@ class Game:
                 print("Invalid word!")
                 print("******************************************")
 
-            self.display_status()
-
             if human_word != 'CHANGE':
                 computer_word = self.computer_play_turn()
                 self.moves += 1  # Αύξηση του μετρητή των κινήσεων
-                self.display_status()
+
+            # Εμφάνιση του σκορ μία φορά μετά από κάθε γύρο
+            self.display_status()
 
     def change_letters(self, player):
         self.sak.putbackletters(player.letters)
@@ -185,6 +184,7 @@ class Game:
         print("******************************************")
 
     def computer_play_turn(self):
+        print(f"Computer's available letters: {self.computer.letters}")  # Εμφάνιση γραμμάτων του υπολογιστή
         computer_word = self.computer.play(self.valid_words, self.sak.letter_points)
         if computer_word:
             points = self.score_word(computer_word)
