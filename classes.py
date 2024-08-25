@@ -4,7 +4,6 @@ from collections import Counter
 import json
 import os
 
-
 class SakClass:
     def __init__(self):
         self.letters = {
@@ -38,6 +37,8 @@ class SakClass:
     def remaining_letters(self):
         return len(self.sak)
 
+    def display_letters_with_points(self, letters):
+        return [f"{letter}({self.letter_points[letter]})" for letter in letters]
 
 class Player:
     def __init__(self, name):
@@ -62,19 +63,19 @@ class Player:
         letters_counter = Counter(self.letters)
         return all(letters_counter[letter] >= word_counter[letter] for letter in word_counter)
 
-
 class Human(Player):
     def __init__(self, name):
         super().__init__(name)
 
-    def play(self):
+    def play(self, sak):
         while True:
             print("******************************************")
-            print(f"Your available letters: {self.letters}")
+            letters_with_points = ", ".join(sak.display_letters_with_points(self.letters))
+            print(f"Your available letters: {letters_with_points}")
             word = input(
-                f"{self.name}, enter your word (or 'change' to replace letters, 'q' to quit): ").strip().upper()
+                f"{self.name}, enter your word (or 'P' to replace letters, 'Q' to quit): ").strip().upper()
             print("******************************************")
-            if word == 'CHANGE':
+            if word == 'P':
                 return word
             elif word == 'Q':
                 return word
@@ -83,7 +84,6 @@ class Human(Player):
             else:
                 print("Invalid word! You don't have the necessary letters.")
                 print("******************************************")
-
 
 class Computer(Player):
     def __init__(self, name, algorithm='MIN'):
@@ -104,7 +104,6 @@ class Computer(Player):
             return max(possible_words, key=len, default=None)
         elif self.algorithm == 'SMART':
             return max(possible_words, key=lambda w: sum([letter_points[l] for l in w]), default=None)
-
 
 class Game:
     def __init__(self, human_name, computer_name, algorithm='MIN'):
@@ -149,12 +148,12 @@ class Game:
 
     def run(self):
         while True:
-            human_word = self.human.play()
+            human_word = self.human.play(self.sak)
             if human_word == 'Q':
                 print("Game over!")
                 print("******************************************")
                 break
-            elif human_word == 'CHANGE':
+            elif human_word == 'P':
                 self.change_letters(self.human)
                 self.moves += 1  # Αύξηση του μετρητή των κινήσεων
                 computer_word = self.computer_play_turn()
@@ -170,7 +169,7 @@ class Game:
                 print("Invalid word!")
                 print("******************************************")
 
-            if human_word != 'CHANGE':
+            if human_word != 'P':
                 computer_word = self.computer_play_turn()
                 self.moves += 1  # Αύξηση του μετρητή των κινήσεων
 
@@ -180,11 +179,12 @@ class Game:
     def change_letters(self, player):
         self.sak.putbackletters(player.letters)
         player.letters = self.sak.getletters(7)
-        print(f"{player.name} changed their letters. New letters: {player.letters}")
+        print(f"{player.name} changed their letters. New letters: {', '.join(player.letters)}")
         print("******************************************")
 
     def computer_play_turn(self):
-        print(f"Computer's available letters: {self.computer.letters}")  # Εμφάνιση γραμμάτων του υπολογιστή
+        letters_with_points = ", ".join(self.sak.display_letters_with_points(self.computer.letters))
+        print(f"Computer's available letters: {letters_with_points}")  # Εμφάνιση γραμμάτων του υπολογιστή
         computer_word = self.computer.play(self.valid_words, self.sak.letter_points)
         if computer_word:
             points = self.score_word(computer_word)

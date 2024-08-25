@@ -2,7 +2,6 @@ import os  # Εισαγωγή του module os για διαχείριση αρ�
 import json  # Εισαγωγή του module json για διαχείριση δεδομένων JSON
 import classes  # Εισαγωγή του module classes που περιέχει τις κλάσεις του παιχνιδιού
 
-
 def guidelines():
     """
     Οδηγίες για την εργασία Scrabble:
@@ -34,7 +33,6 @@ def guidelines():
     Σημείωση: Εκτελέστε την εντολή `help(guidelines)` για να δείτε αυτή την τεκμηρίωση.
     """
 
-
 def display_menu():
     print("******************************************")
     print("** Welcome to the Scrabble Game! **")
@@ -46,7 +44,6 @@ def display_menu():
     choice = input("Enter your choice (1/2/3): ").strip()
     print("******************************************")
     return choice
-
 
 def choose_algorithm():
     print("******************************************")
@@ -68,7 +65,6 @@ def choose_algorithm():
         print("******************************************")
         return 'SMART'
 
-
 def view_game_records():
     if os.path.exists('game_data.json'):
         with open('game_data.json', 'r', encoding='utf-8') as f:
@@ -80,7 +76,6 @@ def view_game_records():
     else:
         print("No game records found.")
     print("******************************************")
-
 
 if __name__ == "__main__":
     guidelines()  # Κλήση της συνάρτησης guidelines για να καταχωρηθεί στη μνήμη
