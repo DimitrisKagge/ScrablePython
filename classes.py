@@ -85,6 +85,7 @@ class Human(Player):
                 print("Invalid word! You don't have the necessary letters.")
                 print("******************************************")
 
+
 class Computer(Player):
     def __init__(self, name, algorithm='MIN'):
         super().__init__(name)
@@ -104,6 +105,7 @@ class Computer(Player):
             return max(possible_words, key=len, default=None)
         elif self.algorithm == 'SMART':
             return max(possible_words, key=lambda w: sum([letter_points[l] for l in w]), default=None)
+
 
 class Game:
     def __init__(self, human_name, computer_name, algorithm='MIN'):
