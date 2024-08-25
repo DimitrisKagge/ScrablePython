@@ -158,7 +158,8 @@ class Game:
             elif human_word == 'P':
                 self.change_letters(self.human)
                 self.moves += 1  # Αύξηση του μετρητή των κινήσεων
-                computer_word = self.computer_play_turn()
+                if not self.computer_play_turn():
+                    break
             elif human_word in self.valid_words:
                 points = self.score_word(human_word)
                 print(f"Valid word! You scored: {points} points.")
@@ -172,8 +173,8 @@ class Game:
                 print("******************************************")
 
             if human_word != 'P':
-                computer_word = self.computer_play_turn()
-                self.moves += 1  # Αύξηση του μετρητή των κινήσεων
+                if not self.computer_play_turn():
+                    break
 
             # Εμφάνιση του σκορ μία φορά μετά από κάθε γύρο
             self.display_status()
@@ -187,6 +188,7 @@ class Game:
     def computer_play_turn(self):
         letters_with_points = ", ".join(self.sak.display_letters_with_points(self.computer.letters))
         print(f"Computer's available letters: {letters_with_points}")  # Εμφάνιση γραμμάτων του υπολογιστή
+
         computer_word = self.computer.play(self.valid_words, self.sak.letter_points)
         if computer_word:
             points = self.score_word(computer_word)
@@ -196,7 +198,16 @@ class Game:
             self.computer.score += points
             self.computer.remove_used_letters(computer_word)
             self.computer.add_letters(self.sak.getletters(7 - len(self.computer.letters)))
-        return computer_word
+        else:
+            print(f"{self.computer.name} couldn't find a valid word and will change letters.")
+            self.change_letters(self.computer)
+            computer_word = self.computer.play(self.valid_words, self.sak.letter_points)
+            if not computer_word:
+                print(f"{self.computer.name} still couldn't find a valid word. Game over!")
+                self.end()
+                return False  # Τερματίζουμε την τρέχουσα παρτίδα
+
+        return True  # Αν βρει λέξη, το παιχνίδι συνεχίζεται
 
     def score_word(self, word):
         return sum([self.sak.letter_points[letter] for letter in word])
