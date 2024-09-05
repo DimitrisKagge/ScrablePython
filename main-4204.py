@@ -5,30 +5,30 @@ import classes  # Εισαγωγή του module classes που περιέχει
 
 def guidelines():
     """
-    Οδηγίες για την εργασία Scrabble:
+    Οδηγίες για το παιχνίδι Scrabble:
 
-    1. Ποιές κλάσεις έχετε υλοποιήσει στον κώδικά σας:
-        - SakClass: Διαχειρίζεται τα γράμματα του σακουλάκιου.
+    1. Ποιες κλάσεις έχετε υλοποιήσει στον κώδικά σας:
+        - SakClass: Διαχειρίζεται τα γράμματα του σακουλιού.
         - Player: Βασική κλάση που περιγράφει έναν παίκτη.
         - Human: Υποκλάση της Player, αντιπροσωπεύει τον ανθρώπινο παίκτη.
         - Computer: Υποκλάση της Player, αντιπροσωπεύει τον υπολογιστή και περιλαμβάνει αλγορίθμους για το παιχνίδι.
         - Game: Διαχειρίζεται τη ροή του παιχνιδιού και συντονίζει την αλληλεπίδραση μεταξύ των παικτών.
 
-    2. Ποιά κληρονομικότητα έχετε υλοποιήσει:
+    2. Ποια κληρονομικότητα έχετε υλοποιήσει:
         - Η κλάση Player είναι η βασική κλάση.
         - Η κλάση Human κληρονομεί από την Player και προσθέτει μεθόδους για τον ανθρώπινο παίκτη.
         - Η κλάση Computer κληρονομεί από την Player και προσθέτει αλγορίθμους για την επιλογή λέξεων.
 
-    3. Ποιά επέκταση μεθόδων έχετε υλοποιήσει:
+    3. Ποια επέκταση μεθόδων έχετε υλοποιήσει:
         - Η μέθοδος `play` επεκτείνεται τόσο στην κλάση Human όσο και στην κλάση Computer, προσαρμόζοντας τη λειτουργία της ανάλογα με το αν ο παίκτης είναι άνθρωπος ή υπολογιστής.
 
     4. Αν έχετε εφαρμόσει υπερφόρτωση τελεστών ή χρησιμοποιήσατε decorators:
         - Στον παρόντα κώδικα δεν εφαρμόστηκε υπερφόρτωση τελεστών ή χρήση decorators.
 
-    5. Σε ποιά δομή (λίστα ή λεξικό-dictionary) οργανώνει η εφαρμογή σας τις λέξεις της γλώσσας στη διάρκεια του παιχνιδιού:
-        - Οι λέξεις της γλώσσας οργανώνονται σε σύνολο (set) στη μέθοδο `load_words` της κλάσης Game για γρήγορη αναζήτηση.
+    5. Σε ποια δομή (λίστα ή λεξικό) οργανώνει η εφαρμογή σας τις λέξεις της γλώσσας κατά τη διάρκεια του παιχνιδιού:
+        - Οι λέξεις οργανώνονται σε σύνολο (set) στη μέθοδο `load_words` της κλάσης Game για γρήγορη αναζήτηση.
 
-    6. Ποιόν αλγόριθμο (ή αλγορίθμους) υλοποιήσατε για να παίξει ο Η/Υ:
+    6. Ποιον αλγόριθμο (ή αλγορίθμους) υλοποιήσατε για να παίξει ο υπολογιστής:
         - Υλοποιήθηκαν οι αλγόριθμοι MIN (μικρότερη λέξη), MAX (μεγαλύτερη λέξη), και SMART (υψηλότερη βαθμολογία) στην κλάση Computer.
 
     Σημείωση: Εκτελέστε την εντολή `help(guidelines)` για να δείτε αυτή την τεκμηρίωση.
@@ -37,25 +37,25 @@ def guidelines():
 
 def display_menu():
     print("******************************************")
-    print("** Welcome to the Scrabble Game! **")
+    print("** Καλώς ήρθατε στο παιχνίδι Scrabble! **")
     print("******************************************")
-    print("1. Start a new game")
-    print("2. View previous game records")
-    print("3. Exit")
+    print("1. Έναρξη νέου παιχνιδιού")
+    print("2. Προβολή προηγούμενων παρτίδων")
+    print("3. Έξοδος")
     print("******************************************")
-    choice = input("Enter your choice (1/2/3): ").strip()
+    choice = input("Εισάγετε την επιλογή σας (1/2/3): ").strip()
     print("******************************************")
     return choice
 
 
 def choose_algorithm():
     print("******************************************")
-    print("Choose the algorithm for the computer player:")
-    print("1. MIN - The computer finds the smallest valid word.")
-    print("2. MAX - The computer finds the largest valid word.")
-    print("3. SMART - The computer finds the highest scoring word.")
+    print("Επιλέξτε τον αλγόριθμο για τον υπολογιστή:")
+    print("1. MIN - Ο υπολογιστής βρίσκει τη μικρότερη έγκυρη λέξη.")
+    print("2. MAX - Ο υπολογιστής βρίσκει τη μεγαλύτερη έγκυρη λέξη.")
+    print("3. SMART - Ο υπολογιστής βρίσκει τη λέξη με την υψηλότερη βαθμολογία.")
     print("******************************************")
-    choice = input("Enter your choice (1/2/3): ").strip()
+    choice = input("Εισάγετε την επιλογή σας (1/2/3): ").strip()
     print("******************************************")
     if choice == '1':
         return 'MIN'
@@ -64,7 +64,7 @@ def choose_algorithm():
     elif choice == '3':
         return 'SMART'
     else:
-        print("Invalid choice, defaulting to SMART.")
+        print("Μη έγκυρη επιλογή, ορίζεται ο αλγόριθμος SMART.")
         print("******************************************")
         return 'SMART'
 
@@ -73,17 +73,16 @@ def view_game_records():
     if os.path.exists('game_data.json'):
         with open('game_data.json', 'r', encoding='utf-8') as f:
             game_data = json.load(f)
-            print("Previous game records:")
+            print("Προηγούμενες παρτίδες:")
             for i, record in enumerate(game_data, start=1):
-                print(
-                    f"Game {i}: Human Score: {record['human_score']}, Computer Score: {record['computer_score']}, Moves: {record['moves']}, Algorithm: {record['algorithm']}")
+                print(f"Παρτίδα {i}: Σκορ Ανθρώπου: {record['human_score']}, Σκορ Υπολογιστή: {record['computer_score']}, Κινήσεις: {record['moves']}, Αλγόριθμος: {record['algorithm']}")
     else:
-        print("No game records found.")
+        print("Δεν βρέθηκαν παρτίδες.")
     print("******************************************")
 
 
 if __name__ == "__main__":
-    guidelines()  # Κλήση της συνάρτησης guidelines για να καταχωρηθεί στη μνήμη
+    guidelines()  # Κλήση της συνάρτησης guidelines
     while True:
         choice = display_menu()
         if choice == '1':
@@ -95,9 +94,9 @@ if __name__ == "__main__":
         elif choice == '2':
             view_game_records()
         elif choice == '3':
-            print("Exiting the game. Goodbye!")
+            print("Έξοδος από το παιχνίδι. Αντίο!")
             print("******************************************")
             break
         else:
-            print("Invalid choice, please try again.")
+            print("Μη έγκυρη επιλογή, παρακαλώ δοκιμάστε ξανά.")
             print("******************************************")

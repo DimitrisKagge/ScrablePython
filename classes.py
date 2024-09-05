@@ -71,20 +71,18 @@ class Human(Player):
         while True:
             print("******************************************")
             letters_with_points = ", ".join(sak.display_letters_with_points(self.letters))
-            print(f"Your available letters: {letters_with_points}")
-            word = input(
-                f"{self.name}, enter your word (or 'P' to replace letters, 'Q' to quit): ").strip().upper()
+            print(f"Τα διαθέσιμα γράμματά σου: {letters_with_points}")
+            word = input(f"{self.name}, πληκτρολόγησε τη λέξη σου (ή 'CHANGE' για αλλαγή γραμμάτων, 'Q' για τερματισμό): ").strip().upper()
             print("******************************************")
-            if word == 'P':
+            if word == 'CHANGE':
                 return word
             elif word == 'Q':
                 return word
             elif self.can_form_word(word):
                 return word
             else:
-                print("Invalid word! You don't have the necessary letters.")
+                print("Λάθος λέξη! Δεν έχεις τα απαραίτητα γράμματα.")
                 print("******************************************")
-
 
 class Computer(Player):
     def __init__(self, name, algorithm='MIN'):
@@ -106,7 +104,6 @@ class Computer(Player):
         elif self.algorithm == 'SMART':
             return max(possible_words, key=lambda w: sum([letter_points[l] for l in w]), default=None)
 
-
 class Game:
     def __init__(self, human_name, computer_name, algorithm='MIN'):
         self.human_name = human_name
@@ -127,7 +124,7 @@ class Game:
         return set(words)
 
     def save_game_data(self):
-        """Save game data to a JSON file."""
+        """Αποθήκευση δεδομένων παιχνιδιού σε αρχείο JSON."""
         game_record = {
             "human_score": self.human.score,
             "computer_score": self.computer.score,
@@ -146,86 +143,83 @@ class Game:
     def setup(self):
         self.human.add_letters(self.sak.getletters(7))
         self.computer.add_letters(self.sak.getletters(7))
-        # Καμία εμφάνιση κατά τη διάρκεια της προετοιμασίας
 
     def run(self):
         while True:
             human_word = self.human.play(self.sak)
             if human_word == 'Q':
-                print("Game over!")
+                print("Το παιχνίδι τελείωσε!")
                 print("******************************************")
                 break
-            elif human_word == 'P':
+            elif human_word == 'CHANGE':
                 self.change_letters(self.human)
-                self.moves += 1  # Αύξηση του μετρητή των κινήσεων
+                self.moves += 1
                 if not self.computer_play_turn():
                     break
             elif human_word in self.valid_words:
                 points = self.score_word(human_word)
-                print(f"Valid word! You scored: {points} points.")
+                print(f"Έγκυρη λέξη! Κέρδισες: {points} πόντους.")
                 print("******************************************")
                 self.human.score += points
                 self.human.remove_used_letters(human_word)
                 self.human.add_letters(self.sak.getletters(7 - len(self.human.letters)))
-                self.moves += 1  # Αύξηση του μετρητή των κινήσεων
+                self.moves += 1
             else:
-                print("Invalid word!")
+                print("Μη έγκυρη λέξη!")
                 print("******************************************")
 
-            if human_word != 'P':
+            if human_word != 'CHANGE':
                 if not self.computer_play_turn():
                     break
 
-            # Εμφάνιση του σκορ μία φορά μετά από κάθε γύρο
             self.display_status()
 
     def change_letters(self, player):
         self.sak.putbackletters(player.letters)
         player.letters = self.sak.getletters(7)
-        print(f"{player.name} changed their letters. New letters: {', '.join(player.letters)}")
+        print(f"{player.name} άλλαξε τα γράμματά του. Νέα γράμματα: {', '.join(player.letters)}")
         print("******************************************")
 
     def computer_play_turn(self):
         letters_with_points = ", ".join(self.sak.display_letters_with_points(self.computer.letters))
-        print(f"Computer's available letters: {letters_with_points}")  # Εμφάνιση γραμμάτων του υπολογιστή
+        print(f"Τα διαθέσιμα γράμματα του υπολογιστή: {letters_with_points}")
 
         computer_word = self.computer.play(self.valid_words, self.sak.letter_points)
         if computer_word:
             points = self.score_word(computer_word)
-            print(f"{self.computer.name} played: {computer_word}")
-            print(f"{self.computer.name} scored: {points} points.")
+            print(f"O {self.computer.name} έπαιξε: {computer_word}")
+            print(f"O {self.computer.name} κέρδισε: {points} πόντους.")
             print("******************************************")
             self.computer.score += points
             self.computer.remove_used_letters(computer_word)
             self.computer.add_letters(self.sak.getletters(7 - len(self.computer.letters)))
         else:
-            print(f"{self.computer.name} couldn't find a valid word and will change letters.")
+            print(f"O {self.computer.name} δεν βρήκε έγκυρη λέξη και θα αλλάξει τα γράμματα.")
             self.change_letters(self.computer)
             computer_word = self.computer.play(self.valid_words, self.sak.letter_points)
             if not computer_word:
-                print(f"{self.computer.name} still couldn't find a valid word. Game over!")
+                print(f"O {self.computer.name} ακόμα δεν βρήκε έγκυρη λέξη. Το παιχνίδι τελείωσε!")
                 self.end()
-                return False  # Τερματίζουμε την τρέχουσα παρτίδα
+                return False
 
-        return True  # Αν βρει λέξη, το παιχνίδι συνεχίζεται
+        return True
 
     def score_word(self, word):
         return sum([self.sak.letter_points[letter] for letter in word])
 
     def display_status(self):
-        print(
-            f"Scores -> {self.human.name}: {self.human.score} points, {self.computer.name}: {self.computer.score} points")
-        print(f"Remaining letters in sack: {self.sak.remaining_letters()}")
+        print(f"Σκορ -> {self.human.name}: {self.human.score} πόντοι, {self.computer.name}: {self.computer.score} πόντοι")
+        print(f"Εναπομείναντα γράμματα στο σακούλι: {self.sak.remaining_letters()}")
         print("******************************************")
 
     def end(self):
-        print("Final score:")
+        print("Τελικό σκορ:")
         self.display_status()
-        self.save_game_data()  # Αποθήκευση δεδομένων στο τέλος του παιχνιδιού
+        self.save_game_data()
         if self.human.score > self.computer.score:
-            print(f"{self.human.name} wins!")
+            print(f"{self.human.name} κέρδισε!")
         elif self.human.score < self.computer.score:
-            print(f"{self.computer.name} wins!")
+            print(f"{self.computer.name} κέρδισε!")
         else:
-            print("It's a tie!")
+            print("Ισοπαλία!")
         print("******************************************")
